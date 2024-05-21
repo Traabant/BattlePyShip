@@ -26,6 +26,10 @@ class Piece:
         self.left = np.array([[BOAT,WATER,WATER],[BOAT,BOAT,BOAT]])
         self.bottom = np.array([[BOAT,BOAT],[BOAT,WATER],[BOAT,WATER]])
         self.set_piece(self.rotation_idx)
+
+        # [['#' '#' ]
+        # ['#' ' ' ]
+        # ['#' ' ' ]]
     
     def I_shape(self):
         self.top = np.array([[BOAT],[BOAT],[BOAT],[BOAT]])
@@ -34,12 +38,20 @@ class Piece:
         self.bottom = np.array([[BOAT],[BOAT],[BOAT],[BOAT]])
         self.set_piece(self.rotation_idx)
 
+        # [['#']
+        # ['#']
+        # ['#']
+        # ['#']]
+
     def Big_shape(self):
         self.top = np.array([[WATER,BOAT],[BOAT,BOAT],[WATER,BOAT],[BOAT,BOAT],[WATER,BOAT]])
         self.right = np.array([[WATER,BOAT,WATER,BOAT,WATER],[BOAT,BOAT,BOAT,BOAT,BOAT]])
         self.left = np.array([[BOAT,BOAT,BOAT,BOAT,BOAT],[WATER,BOAT,WATER,BOAT,WATER]])
         self.bottom = np.array([[BOAT,WATER],[BOAT,BOAT],[BOAT,WATER],[BOAT,BOAT],[BOAT,WATER]])
         self.set_piece(self.rotation_idx)
+
+        # [' ' '#' ' ' '#' ' ']
+        # ['#' '#' '#' '#' '#' ' ']
 
     def rotate_piece(self):
         if(self.rotation_idx < (len(self.rotations) - 1)):
@@ -99,17 +111,16 @@ class Board:
         return True
 
     def highlight(self, InputX, InputY):
+        # creates copy of he gameBoard, and highs entire row or specific cell
         self.gameBoardHighlighted = self.gameBoard.copy()
         if InputY == None:
             for indexY, Row in enumerate(self.gameBoard):
                 if self.gameBoardHighlighted[indexY, InputX] != HIT:
                     self.gameBoardHighlighted[indexY, InputX] = SELECT
-            # for index, cell in enumerate(self.gameBoard[InputX]):
-            #     self.gameBoardHighlighted[InputX, index] = SELECT
         else:
             self.gameBoardHighlighted[InputY, InputX] = SELECT
     
-    def print(self,):
+    def print(self) -> str:
         out = "  A B C D E F G H\n"
         out += "  0 1 2 3 4 5 6 7\n"
         for line_num, x in enumerate(self.gameBoard):
@@ -122,7 +133,7 @@ class Board:
         out += "  0 1 2 3 4 5 6 7\n"
         return out
     
-    def printHighlated(self):
+    def printHighlated(self) -> str:
         out = "  A B C D E F G H\n"
         out += "  0 1 2 3 4 5 6 7\n"
         for line_num, x in enumerate(self.gameBoardHighlighted):
@@ -202,6 +213,19 @@ class Game():
                     placed = True
 
     def autoPlacePieces(self):
+        # Populates game with 3 pieces for quick gameTesting
+        #   A B C D E F G H
+        #   0 1 2 3 4 5 6 7
+        # 0 # #       #     0
+        # 1 #         #     1
+        # 2 #         #     2
+        # 3           #     3
+        # 4   #   #         4
+        # 5 # # # # #       5
+        # 6                 6
+        # 7                 7
+        #   0 1 2 3 4 5 6 7
+
         piece = self.startingPieces[0]
         piece.rotate_piece()
         piece.rotate_piece()
@@ -217,9 +241,6 @@ class Game():
         self.board.add_piece(5, 0, piece)
     
     def shoot(self, InputX, InputY):
-        print(f"num of active boats: {self.numOfActiveBoats}")
-        print(self.board.print())
-        print("please shoot")
         userInputX = InputX
         userInputY = InputY
         if userInputX > self.board.WIDTH or userInputY > self.board.LENGTH:
@@ -252,7 +273,7 @@ if __name__ == "__main__":
     game = Game()
     game.setup()
     game.autoPlacePieces()
-    print(game.board.gameBoard)
+    print(game.board.print())
     game.gameLoop()
     print("Win")
 

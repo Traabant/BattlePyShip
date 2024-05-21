@@ -15,19 +15,19 @@ game.autoPlacePieces()
 game.gameLoop()
 state = GameState()
 
-# Divide the "screen" in to three parts
+# Initial TUI setup
 layout.split(
     Layout(Panel("BattlePy", padding=(0,30), title="BattlePy"),  size=3),
     Layout(ratio=1, name="main"),
     Layout(size=10, name="footer"),
 )
-# Divide the "main" layout in to "side" and "body"
+
 layout["main"].split_row(
     Layout(name="side"),
     Layout(name="body", ratio=2),
     Layout(name="right")
 )
-# Divide the "side" layout in to two
+
 layout['side'].split(
     Layout(Panel("X input: ", title= "X input"), name="XInput"),
     Layout(Panel("Y input: ", title= "Y input"), name="YInput"),
@@ -50,12 +50,14 @@ layout['footer'].update(Panel(
 console.print(layout)
 
 def validateInput(state: GameState, board: Board):
+    # Checks for user input to be inside gameBoard
     if (state.userInputX > board.WIDTH - 1) or (state.userInputY > board.LENGTH - 1) :
         return False
     return True
     
 
 def refreshScreen(state: GameState):
+    # Refreshes the screen, populates the data from GameState object
     game.gameLoop()
     layout["XInput"].update(Layout(Panel(f"X input: {state.userInputX}")))
     layout["YInput"].update(Layout(Panel(f"Y input: {state.userInputY}")))
@@ -64,10 +66,9 @@ def refreshScreen(state: GameState):
         layout['body'].update(Panel(game.board.printHighlated()))
     else:
         layout['body'].update(Panel(game.board.print()))
-
     console.clear()
     console.print(layout)
-    pass
+
 
 def gameTick():
     state.showHighlated = False
@@ -75,16 +76,14 @@ def gameTick():
     state.userInputY = 0
     state.blocsRemaining = game.getActiveBoats()
     refreshScreen(state)
+
     state.userInputX = IntPrompt.ask("X Input: \n", default=0)
     state.showHighlated = True
     if validateInput(state, game.board) is False:
         return 
-
     refreshScreen(state)
     game.board.highlight(int(state.userInputX), None)
     refreshScreen(state)
-    console.clear()
-    console.print(layout)
     state.userInputY = IntPrompt.ask("Y Input: \n", default=0)
     if validateInput(state, game.board) is False:
         return
@@ -92,9 +91,9 @@ def gameTick():
     state.showHighlated = True
     layout['body'].update(Panel(game.board.printHighlated()))
     refreshScreen(state)
-
     NextAction = Prompt.ask("Action: \n", default="s")
     NextAction = NextAction.lower()
+
 
     if NextAction == 'q':
         exit()
