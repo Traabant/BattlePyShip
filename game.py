@@ -3,11 +3,18 @@ from rich.layout import Layout
 from rich.panel import Panel
 from rich.prompt import Prompt, IntPrompt
 
+import os
+
 from battleship import Game, GameState, Board
 
 
 console = Console()
+_width, _height = os.get_terminal_size()
+console.size = (_width, _height-2)
 layout = Layout()
+gameMenu = Layout(name="GameMenu")
+
+
 
 game = Game()
 game.setup()
@@ -47,7 +54,7 @@ layout['footer'].update(Panel(
     '''
 ))
 
-console.print(layout)
+# console.print(layout)
 
 def validateInput(state: GameState, board: Board):
     # Checks for user input to be inside gameBoard
@@ -56,7 +63,7 @@ def validateInput(state: GameState, board: Board):
     return True
     
 
-def refreshScreen(state: GameState):
+def refreshScreenGameLoop(state: GameState):
     # Refreshes the screen, populates the data from GameState object
     game.gameLoop()
     layout["XInput"].update(Layout(Panel(f"X input: {state.userInputX}")))
@@ -69,28 +76,36 @@ def refreshScreen(state: GameState):
     console.clear()
     console.print(layout)
 
+def initScreen():
+    gameMenu.split(
+        Layout(Panel("BattlePy", padding=(0,30), title="BattlePy"),  size=3),
+        Layout(ratio=1, name="main"),
+        Layout(Panel("C = Continue\nQ = quit\n", title= "Actions"), name="Actions", size=10),
+    )
+
+    gameMenu['main'].update(Panel("Welcome to the game"))
 
 def gameTick():
     state.showHighlated = False
     state.userInputX = 0
     state.userInputY = 0
     state.blocsRemaining = game.getActiveBoats()
-    refreshScreen(state)
+    refreshScreenGameLoop(state)
 
     state.userInputX = IntPrompt.ask("X Input: \n", default=0)
     state.showHighlated = True
     if validateInput(state, game.board) is False:
         return 
-    refreshScreen(state)
+    refreshScreenGameLoop(state)
     game.board.highlight(int(state.userInputX), None)
-    refreshScreen(state)
+    refreshScreenGameLoop(state)
     state.userInputY = IntPrompt.ask("Y Input: \n", default=0)
     if validateInput(state, game.board) is False:
         return
     game.board.highlight(int(state.userInputX), int(state.userInputY))
     state.showHighlated = True
     layout['body'].update(Panel(game.board.printHighlated()))
-    refreshScreen(state)
+    refreshScreenGameLoop(state)
     NextAction = Prompt.ask("Action: \n", default="s")
     NextAction = NextAction.lower()
 
@@ -102,10 +117,14 @@ def gameTick():
         state.showHighlated = False
         state.IncrementMoves()
         game.shoot(int(state.userInputX), int(state.userInputY))
-    refreshScreen(state)
+    refreshScreenGameLoop(state)
 
 
-
+initScreen()
+console.print(gameMenu)
+NextAction = Prompt.ask("Play?: \n", default="y")
+if NextAction == 'q':
+        exit()
 while True:
     gameTick()
     
