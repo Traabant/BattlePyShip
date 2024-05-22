@@ -2,6 +2,7 @@ from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.prompt import Prompt, IntPrompt
+from rich.align import Align
 
 import os
 
@@ -9,8 +10,10 @@ from battleship import Game, GameState, Board
 
 
 console = Console()
+# shrinks window by 2 line to make room for prompt which is not part of the layout
 _width, _height = os.get_terminal_size()
 console.size = (_width, _height-2)
+
 layout = Layout()
 gameMenu = Layout(name="GameMenu")
 
@@ -24,10 +27,15 @@ state = GameState()
 
 # Initial TUI setup
 layout.split(
-    Layout(Panel("BattlePy", padding=(0,30), title="BattlePy"),  size=3),
+    Layout(Panel(
+        Align.center(
+            "BattlePy"
+        )),
+        size=3, name="Title"),
     Layout(ratio=1, name="main"),
     Layout(size=10, name="footer"),
 )
+
 
 layout["main"].split_row(
     Layout(name="side"),
@@ -70,20 +78,28 @@ def refreshScreenGameLoop(state: GameState):
     layout["YInput"].update(Layout(Panel(f"Y input: {state.userInputY}")))
     layout['right'].update(Panel(f"Block remaining: {state.blocsRemaining}\nNum of Moves: {state.numOfMove}"))
     if state.showHighlated:
-        layout['body'].update(Panel(game.board.printHighlated()))
+        layout['body'].update(Panel(Align.center(game.board.printHighlated(), 
+                                                 vertical="middle")))
     else:
-        layout['body'].update(Panel(game.board.print()))
+        layout['body'].update(Panel(Align.center(game.board.print(), 
+                                                 vertical="middle")))
     console.clear()
     console.print(layout)
 
 def initScreen():
     gameMenu.split(
-        Layout(Panel("BattlePy", padding=(0,30), title="BattlePy"),  size=3),
+        Layout(Panel(
+            Align.center(
+                "BattlePy The Game"
+            )),
+            size=3, name="Title"),
         Layout(ratio=1, name="main"),
         Layout(Panel("C = Continue\nQ = quit\n", title= "Actions"), name="Actions", size=10),
     )
 
     gameMenu['main'].update(Panel("Welcome to the game"))
+    console.clear()
+    console.print(gameMenu)
 
 def gameTick():
     state.showHighlated = False
@@ -121,7 +137,6 @@ def gameTick():
 
 
 initScreen()
-console.print(gameMenu)
 NextAction = Prompt.ask("Play?: \n", default="y")
 if NextAction == 'q':
         exit()
