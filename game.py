@@ -50,7 +50,7 @@ layout['side'].split(
 )
 
 layout['body'].update(Panel(game.board.print()))
-layout['right'].update(Panel(f"Block remainng: {game.numOfActiveBoats} "))
+layout['right'].update(Panel(f"Block remaining: {game.numOfActiveBoats} "))
 
 layout['footer'].update(Panel(
     '''
@@ -78,7 +78,7 @@ def refreshScreenGameLoop(state: GameState):
     layout["YInput"].update(Layout(Panel(f"Y input: {state.userInputY}")))
     layout['right'].update(Panel(f"Block remaining: {state.blocsRemaining}\nNum of Moves: {state.numOfMove}"))
     if state.showHighlated:
-        layout['body'].update(Panel(Align.center(game.board.printHighlated(), 
+        layout['body'].update(Panel(Align.center(game.board.printHighlighted(), 
                                                  vertical="middle")))
     else:
         layout['body'].update(Panel(Align.center(game.board.print(), 
@@ -87,6 +87,7 @@ def refreshScreenGameLoop(state: GameState):
     console.print(layout)
 
 def initScreen():
+    # Welcome screen
     gameMenu.split(
         Layout(Panel(
             Align.center(
@@ -120,7 +121,7 @@ def gameTick():
         return
     game.board.highlight(int(state.userInputX), int(state.userInputY))
     state.showHighlated = True
-    layout['body'].update(Panel(game.board.printHighlated()))
+    layout['body'].update(Panel(game.board.printHighlighted()))
     refreshScreenGameLoop(state)
     NextAction = Prompt.ask("Action: \n", default="s")
     NextAction = NextAction.lower()

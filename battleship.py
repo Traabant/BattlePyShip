@@ -133,7 +133,7 @@ class Board:
         out += "  0 1 2 3 4 5 6 7\n"
         return out
     
-    def printHighlated(self) -> str:
+    def printHighlighted(self) -> str:
         out = "  A B C D E F G H\n"
         out += "  0 1 2 3 4 5 6 7\n"
         for line_num, x in enumerate(self.gameBoardHighlighted):
