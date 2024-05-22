@@ -153,7 +153,7 @@ class GameState():
         self.userInputY = None
         self.blocsRemaining = 0
         self.numOfMove = 0
-        self.showHighlated = False
+        self.showHighlighted = False
 
     def IncrementMoves(self):
         self.numOfMove += 1

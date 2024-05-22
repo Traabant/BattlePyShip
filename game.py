@@ -77,7 +77,7 @@ def refreshScreenGameLoop(state: GameState):
     layout["XInput"].update(Layout(Panel(f"X input: {state.userInputX}")))
     layout["YInput"].update(Layout(Panel(f"Y input: {state.userInputY}")))
     layout['right'].update(Panel(f"Block remaining: {state.blocsRemaining}\nNum of Moves: {state.numOfMove}"))
-    if state.showHighlated:
+    if state.showHighlighted:
         layout['body'].update(Panel(Align.center(game.board.printHighlighted(), 
                                                  vertical="middle")))
     else:
@@ -103,14 +103,14 @@ def initScreen():
     console.print(gameMenu)
 
 def gameTick():
-    state.showHighlated = False
+    state.showHighlighted = False
     state.userInputX = 0
     state.userInputY = 0
     state.blocsRemaining = game.getActiveBoats()
     refreshScreenGameLoop(state)
 
     state.userInputX = IntPrompt.ask("X Input: \n", default=0)
-    state.showHighlated = True
+    state.showHighlighted = True
     if validateInput(state, game.board) is False:
         return 
     refreshScreenGameLoop(state)
@@ -120,7 +120,7 @@ def gameTick():
     if validateInput(state, game.board) is False:
         return
     game.board.highlight(int(state.userInputX), int(state.userInputY))
-    state.showHighlated = True
+    state.showHighlighted = True
     layout['body'].update(Panel(game.board.printHighlighted()))
     refreshScreenGameLoop(state)
     NextAction = Prompt.ask("Action: \n", default="s")
@@ -131,7 +131,7 @@ def gameTick():
         exit()
 
     if NextAction != "c":
-        state.showHighlated = False
+        state.showHighlighted = False
         state.IncrementMoves()
         game.shoot(int(state.userInputX), int(state.userInputY))
     refreshScreenGameLoop(state)
